@@ -11,7 +11,7 @@ LIBS=-lSDL2main -lSDL2
 DLL_PATH=./vendor/SDL2/lib/x64/SDL2.dll
 
 build:
-	gcc -Wall -std=c99 ${INC} ${LIB_PATH} ./src/*.c ${LIBS} -o game
+	gcc -Wall -std=c23 ${INC} ${LIB_PATH} ./src/*.c ${LIBS} -o game
 	cp ${DLL_PATH} .
 
 run:

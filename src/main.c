@@ -1,19 +1,22 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include "utils.h"
+#include "entity.h"
 #include "SDL.h"
 
 int32_t game_is_running;
 SDL_Window* window;
 SDL_Renderer* renderer;
+Entity* entity;
 float delta_time;
 
 float last_frame_time = 0.0f;
 
-struct ball 
-{
-    float x, y, width, height;
-} ball;
+static void move_player_down();
+static void move_player_up();
+static void free_memory();
+
 
 int32_t initialize_window()
 {
@@ -44,6 +47,16 @@ int32_t initialize_window()
     return INIT_SUCCESS;
 }
 
+static void move_player_down()
+{
+    entity->ball->rectangle->y += 200 * delta_time;
+}
+
+static void move_player_up()
+{
+    entity->ball->rectangle->y -= 200 * delta_time;
+}
+
 void process_input()
 {
     SDL_Event event;
@@ -58,11 +71,11 @@ void process_input()
         case SDL_KEYDOWN:
             if (event.key.keysym.sym == SDLK_ESCAPE)
             game_is_running = 0;
-            else if (event.key.keysym.sym == SDLK_DOWN)
+            else if (event.key.keysym.sym == SDLK_DOWN) // Ako je tipka DOLJE pritisnuta, pomakni igraca DOLJE
             {
                 move_player_down();
             }
-            else if (event.key.keysym.sym == SDLK_UP)
+            else if (event.key.keysym.sym == SDLK_UP) // Ako je tipka GORE pritisnuta, pomakni igraca GORE
             {
                 move_player_up();
             }
@@ -70,33 +83,18 @@ void process_input()
     }
 }
 
-void move_player_down()
-{
-    ball.y += 50 * delta_time;
-}
-
-void move_player_up()
-{
-    ball.y -= 50 * delta_time;
-}
-
-void check_for_player_movement();
-
 void update()
 {
     // Geta delta time factor converted to seconds to be used to update my objects later
     delta_time = (SDL_GetTicks64() - last_frame_time) / 1000.0f;
 
     last_frame_time = SDL_GetTicks64();
-    check_for_player_movement();
 }
 
 void setup()
 {
-    ball.x = 20.0f;
-    ball.y = 20.0f;
-    ball.width = 15.0f;
-    ball.height = 100.0f;
+    entity = (Entity*)malloc(sizeof(Entity));
+    initialize_entities(entity);
 }
 
 void render()
@@ -105,10 +103,9 @@ void render()
     SDL_RenderClear(renderer);
 
     // TODO: Draw a rectangle
-    SDL_Rect ball_rect = {(int)ball.x, (int)ball.y, (int)ball.width, (int)ball.height};
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, &ball_rect);
+    SDL_RenderFillRect(renderer, entity->ball->rectangle);
     // Present the screen
     SDL_RenderPresent(renderer);
 }
@@ -118,6 +115,19 @@ void destroy_window()
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+static void free_memory()
+{
+    free(entity->ball->rectangle);
+    free(entity->player1->rectangle);
+    free(entity->player2->rectangle);
+
+    free(entity->ball);
+    free(entity->player1);
+    free(entity->player2);
+    
+    free(entity);
 }
 
 int SDL_main (int argc, char* argv[])
@@ -137,6 +147,7 @@ int SDL_main (int argc, char* argv[])
     }
 
     destroy_window();
+    free_memory();
 
     return 0;
 }
