@@ -7,8 +7,6 @@
 #include "renderer.h"
 #include "SDL.h"
 
-SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL;
 Entity* entity;
 Time time;
 
@@ -80,23 +78,22 @@ static void free_memory()
 
 int SDL_main (int argc, char* argv[])
 {
-    game_is_running = initialize_window(&window, &renderer);
+    game_is_running = initialize_window();
     if (game_is_running != INIT_SUCCESS)
     {
         return -1;
     }
     setup();
-    printf("Game is running...");
     while(game_is_running)
     {
         update();
         process_input();
-        render(renderer, entity);
+        render(entity);
         delay_frame(&time);
     }
 
     free_memory();
-    destroy_window(window, renderer);
+    destroy_window();
     
     return 0;
 }

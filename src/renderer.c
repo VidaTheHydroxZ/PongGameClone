@@ -4,14 +4,17 @@
 
 int32_t game_is_running;
 
-int32_t initialize_window(SDL_Window** window, SDL_Renderer** renderer)
+SDL_Window* window;
+SDL_Renderer* renderer;
+
+int32_t initialize_window()
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) 
     {
         fprintf(stderr, "Error initializing SDL: %s\n", SDL_GetError());
         return INIT_FAILED;
     }
-        *window = SDL_CreateWindow(
+        window = SDL_CreateWindow(
         "PongGame", 
         SDL_WINDOWPOS_CENTERED, 
         SDL_WINDOWPOS_CENTERED, 
@@ -19,24 +22,24 @@ int32_t initialize_window(SDL_Window** window, SDL_Renderer** renderer)
         WINDOW_HEIGHT, 
         SDL_WINDOW_BORDERLESS
         );
-    if (!*window) 
+    if (!window) 
     {
         fprintf(stderr, "Error creating SDL Window: %s\n", SDL_GetError());
         SDL_Quit();
         return INIT_FAILED;
     }
-        *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED);
-    if (!*renderer)
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer)
     {
         fprintf(stderr, "Error creating SDL Renderer: %s\n", SDL_GetError());
-        SDL_DestroyWindow(*window);
+        SDL_DestroyWindow(window);
         SDL_Quit();
         return INIT_FAILED;
     }
     return INIT_SUCCESS;
 }
 
-void render(SDL_Renderer* renderer, Entity* entity)
+void render(Entity* entity)
 {
 
     if (!renderer) {
@@ -56,7 +59,7 @@ void render(SDL_Renderer* renderer, Entity* entity)
     SDL_RenderPresent(renderer);
 }
 
-void destroy_window(SDL_Window* window, SDL_Renderer* renderer)
+void destroy_window()
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

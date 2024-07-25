@@ -10,7 +10,6 @@ void initialize_time(Time* time)
     time->last_frame_time = 0.0f;
 }
 
-
 float get_delta_time(Time* time)
 {
     return time->delta_time;
