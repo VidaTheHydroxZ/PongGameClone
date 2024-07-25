@@ -3,17 +3,14 @@
 #include <stdbool.h>
 #include "utils.h"
 #include "entity.h"
+#include "time.h"
 #include "SDL.h"
 
 int32_t game_is_running;
 SDL_Window* window;
 SDL_Renderer* renderer;
 Entity* entity;
-
-float delta_time = 0.0f;
-float last_frame_time = 0.0f;
-float current_frame_time = 0.0f;
-float frame_time = 0.0f;
+Time time;
 
 static void move_player_one_down();
 static void move_player_one_up();
@@ -55,9 +52,8 @@ int32_t initialize_window()
 
 static void ball_movement()
 {
-    // TODO: Ball movement around the screen
-    entity->ball->rectangle->x += (entity->ball->speed_x * delta_time);
-    entity->ball->rectangle->y += (entity->ball->speed_y * delta_time);
+    entity->ball->rectangle->x += (entity->ball->speed_x * get_delta_time(&time));
+    entity->ball->rectangle->y += (entity->ball->speed_y * get_delta_time(&time));
 }
 
 static void check_ball_walls_collision()
@@ -82,7 +78,6 @@ static void check_ball_player_collision()
         entity->ball->speed_x *= -1;
 
         entity->ball->rectangle->x = (entity->player1->rectangle->x + entity->player1->rectangle->w);
-        printf("Ball collided with player 1!");
     }
     else if (entity->ball->rectangle->x < (entity->player2->rectangle->x + entity->player2->rectangle->w) &&
             (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player2->rectangle->x  &&
@@ -92,48 +87,32 @@ static void check_ball_player_collision()
         entity->ball->speed_x *= -1;
 
         entity->ball->rectangle->x = (entity->player2->rectangle->x - entity->ball->rectangle->w);
-        printf("Ball collided with player 2!");
     }
 }
 
 static void move_player_one_up()
 {
-    entity->player1->rectangle->y -= 1000 * delta_time;
+    entity->player1->rectangle->y -= 1000 * get_delta_time(&time);
 }
 
 static void move_player_one_down()
 {
-    entity->player1->rectangle->y += 1000 * delta_time;
+    entity->player1->rectangle->y += 1000 * get_delta_time(&time);
 }
 
 static void move_player_two_up()
 {
-    entity->player2->rectangle->y -= 1000 * delta_time;
+    entity->player2->rectangle->y -= 1000 * get_delta_time(&time);
 }
 
 static void move_player_two_down()
 {
-    entity->player2->rectangle->y += 1000 * delta_time;
-}
-
-void delay_frame()
-{
-    frame_time = SDL_GetTicks() - last_frame_time;
-
-    if (FRAME_TARGET_TIME > frame_time)
-    {
-        SDL_Delay(FRAME_TARGET_TIME - frame_time);
-    }
+    entity->player2->rectangle->y += 1000 * get_delta_time(&time);
 }
 
 void update()
 {
-    current_frame_time = SDL_GetTicks();
-
-    // Geta delta time factor converted to seconds to be used to update objects
-    delta_time = (current_frame_time - last_frame_time) / 1000.0f;
-    last_frame_time = current_frame_time;
-
+    calculate_delta_time(&time);
     ball_movement();
     check_ball_player_collision();
     check_ball_walls_collision();
@@ -179,6 +158,7 @@ void setup()
 {
     entity = (Entity*)malloc(sizeof(Entity));
     initialize_entities(entity);
+    initialize_time(&time);
 }
 
 void render()
@@ -229,7 +209,7 @@ int SDL_main (int argc, char* argv[])
         update();
         process_input();
         render();
-        delay_frame();
+        delay_frame(&time);
     }
 
     free_memory();

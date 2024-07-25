@@ -29,3 +29,8 @@ void initialize_entities(Entity* entity)
     entity->player2->rectangle->h = 100.0f;
     entity->player2->rectangle->w = 20.0f;
 }
+
+void move_player_one_up()
+{
+    
+}
