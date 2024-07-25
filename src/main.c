@@ -4,44 +4,15 @@
 #include "utils.h"
 #include "entity.h"
 #include "time.h"
+#include "renderer.h"
 #include "SDL.h"
 
-int32_t game_is_running;
-SDL_Window* window;
-SDL_Renderer* renderer;
+SDL_Window* window = NULL;
+SDL_Renderer* renderer = NULL;
 Entity* entity;
 Time time;
 
 static void free_memory();
-
-int32_t initialize_window()
-{
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) 
-    {
-        fprintf(stderr, "Error initializing SDL.\n");
-        return INIT_FAILED;
-    }
-        window = SDL_CreateWindow(
-        "BlobGame", 
-        SDL_WINDOWPOS_CENTERED, 
-        SDL_WINDOWPOS_CENTERED, 
-        WINDOW_WIDTH, 
-        WINDOW_HEIGHT, 
-        SDL_WINDOW_BORDERLESS
-        );
-    if (!window) 
-    {
-        fprintf(stderr, "Error creating SDL Window.\n");
-        return INIT_FAILED;
-    }
-        renderer = SDL_CreateRenderer(window, -1, 0);
-    if (!renderer)
-    {
-        fprintf(stderr, "Error creating SDL Renderer.\n");
-        return INIT_FAILED;
-    }
-    return INIT_SUCCESS;
-}
 
 void update()
 {
@@ -94,27 +65,6 @@ void setup()
     initialize_time(&time);
 }
 
-void render()
-{
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, entity->ball->rectangle);
-    SDL_RenderFillRect(renderer, entity->player1->rectangle);
-    SDL_RenderFillRect(renderer, entity->player2->rectangle);
-
-    // Present the screen
-    SDL_RenderPresent(renderer);
-}
-
-void destroy_window()
-{
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-}
-
 static void free_memory()
 {
     free(entity->ball->rectangle);
@@ -130,7 +80,7 @@ static void free_memory()
 
 int SDL_main (int argc, char* argv[])
 {
-    game_is_running = initialize_window();
+    game_is_running = initialize_window(&window, &renderer);
     if (game_is_running != INIT_SUCCESS)
     {
         return -1;
@@ -141,12 +91,12 @@ int SDL_main (int argc, char* argv[])
     {
         update();
         process_input();
-        render();
+        render(renderer, entity);
         delay_frame(&time);
     }
 
     free_memory();
-    destroy_window();
+    destroy_window(window, renderer);
     
     return 0;
 }
