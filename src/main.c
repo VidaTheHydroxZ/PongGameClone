@@ -9,12 +9,16 @@ int32_t game_is_running;
 SDL_Window* window;
 SDL_Renderer* renderer;
 Entity* entity;
-float delta_time;
 
+float delta_time = 0.0f;
 float last_frame_time = 0.0f;
+float current_frame_time = 0.0f;
+float frame_time = 0.0f;
 
-static void move_player_down();
-static void move_player_up();
+static void move_player_one_down();
+static void move_player_one_up();
+static void move_player_two_down();
+static void move_player_two_up();
 static void free_memory();
 
 
@@ -47,48 +51,78 @@ int32_t initialize_window()
     return INIT_SUCCESS;
 }
 
-static void move_player_down()
+static void move_player_one_down()
 {
-    entity->ball->rectangle->y += 200 * delta_time;
+    entity->player1->rectangle->y += 1000 * delta_time;
 }
 
-static void move_player_up()
+static void move_player_one_up()
 {
-    entity->ball->rectangle->y -= 200 * delta_time;
+    entity->player1->rectangle->y -= 1000 * delta_time;
 }
 
-void process_input()
+static void move_player_two_down()
 {
-    SDL_Event event;
-    SDL_PollEvent(&event);
+    entity->player2->rectangle->y += 1000 * delta_time;
+}
 
-    switch(event.type)
+static void move_player_two_up()
+{
+    entity->player2->rectangle->y -= 1000 * delta_time;
+}
+
+void delay_frame()
+{
+    frame_time = SDL_GetTicks() - last_frame_time;
+
+    if (FRAME_TARGET_TIME > frame_time)
     {
-        case SDL_QUIT:
-            game_is_running = 0;
-            break;
-
-        case SDL_KEYDOWN:
-            if (event.key.keysym.sym == SDLK_ESCAPE)
-            game_is_running = 0;
-            else if (event.key.keysym.sym == SDLK_DOWN) // Ako je tipka DOLJE pritisnuta, pomakni igraca DOLJE
-            {
-                move_player_down();
-            }
-            else if (event.key.keysym.sym == SDLK_UP) // Ako je tipka GORE pritisnuta, pomakni igraca GORE
-            {
-                move_player_up();
-            }
-            break;
+        SDL_Delay(FRAME_TARGET_TIME - frame_time);
     }
 }
 
 void update()
 {
+    current_frame_time = SDL_GetTicks();
     // Geta delta time factor converted to seconds to be used to update my objects later
-    delta_time = (SDL_GetTicks64() - last_frame_time) / 1000.0f;
+    delta_time = (current_frame_time - last_frame_time) / 1000.0f;
+    last_frame_time = current_frame_time;
+}
 
-    last_frame_time = SDL_GetTicks64();
+void process_input()
+{
+    SDL_Event event;
+    SDL_GetKeyboardState(NULL);
+    while(SDL_PollEvent(&event))
+    {
+        if (event.type == SDL_Quit)
+        {
+            game_is_running = 0;
+        }
+    }
+
+    const Uint8* state = SDL_GetKeyboardState(NULL);
+
+    if (state[SDL_SCANCODE_ESCAPE])
+    {
+        game_is_running = 0;
+    }
+    if (state[SDL_SCANCODE_W])
+    {
+        move_player_one_up();
+    }
+    if (state[SDL_SCANCODE_S])
+    {
+        move_player_one_down();
+    }
+    if (state[SDL_SCANCODE_K])
+    {
+        move_player_two_up();
+    }
+    if (state[SDL_SCANCODE_L])
+    {
+        move_player_two_down();
+    }
 }
 
 void setup()
@@ -102,10 +136,11 @@ void render()
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    // TODO: Draw a rectangle
-
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(renderer, entity->ball->rectangle);
+    SDL_RenderFillRect(renderer, entity->player1->rectangle);
+    SDL_RenderFillRect(renderer, entity->player2->rectangle);
+
     // Present the screen
     SDL_RenderPresent(renderer);
 }
@@ -141,13 +176,14 @@ int SDL_main (int argc, char* argv[])
     printf("Game is running...");
     while(game_is_running)
     {
-        process_input();
         update();
+        process_input();
         render();
+        delay_frame();
     }
 
-    destroy_window();
     free_memory();
-
+    destroy_window();
+    
     return 0;
 }
