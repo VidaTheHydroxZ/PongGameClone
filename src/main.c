@@ -11,6 +11,7 @@ Entity* entity;
 Time time;
 
 static void free_memory();
+static void quit_game();
 
 void update()
 {
@@ -56,7 +57,7 @@ void process_input()
     }
 }
 
-void setup()
+void init()
 {
     entity = (Entity*)malloc(sizeof(Entity));
     initialize_entities(entity);
@@ -76,6 +77,12 @@ static void free_memory()
     free(entity);
 }
 
+static void quit_game()
+{
+    free_memory();
+    destroy_window();
+}
+
 int SDL_main (int argc, char* argv[])
 {
     game_is_running = initialize_window();
@@ -83,7 +90,7 @@ int SDL_main (int argc, char* argv[])
     {
         return -1;
     }
-    setup();
+    init();
     while(game_is_running)
     {
         update();
@@ -92,8 +99,7 @@ int SDL_main (int argc, char* argv[])
         delay_frame(&time);
     }
 
-    free_memory();
-    destroy_window();
+    quit_game();
     
     return 0;
 }
