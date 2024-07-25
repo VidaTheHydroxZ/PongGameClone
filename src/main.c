@@ -12,14 +12,7 @@ SDL_Renderer* renderer;
 Entity* entity;
 Time time;
 
-static void move_player_one_down();
-static void move_player_one_up();
-static void move_player_two_down();
-static void move_player_two_up();
 static void free_memory();
-static void ball_movement();
-static void check_ball_walls_collision();
-static void check_ball_player_collision();
 
 int32_t initialize_window()
 {
@@ -50,72 +43,12 @@ int32_t initialize_window()
     return INIT_SUCCESS;
 }
 
-static void ball_movement()
-{
-    entity->ball->rectangle->x += (entity->ball->speed_x * get_delta_time(&time));
-    entity->ball->rectangle->y += (entity->ball->speed_y * get_delta_time(&time));
-}
-
-static void check_ball_walls_collision()
-{
-    if (entity->ball->rectangle->x <= 0 || (entity->ball->rectangle->x + entity->ball->rectangle->w) >= WINDOW_WIDTH)
-    {
-        entity->ball->speed_x *= -1;
-    }
-    else if (entity->ball->rectangle->y <= 0 || (entity->ball->rectangle->y + entity->ball->rectangle->h) >= WINDOW_HEIGHT)
-    {
-        entity->ball->speed_y *= -1;
-    }
-}
-
-static void check_ball_player_collision()
-{
-    if  (entity->ball->rectangle->x < (entity->player1->rectangle->x + entity->player1->rectangle->w) &&
-        (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player1->rectangle->x  &&
-         entity->ball->rectangle->y < (entity->player1->rectangle->y + entity->player1->rectangle->h) &&
-        (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player1->rectangle->y)
-    {
-        entity->ball->speed_x *= -1;
-
-        entity->ball->rectangle->x = (entity->player1->rectangle->x + entity->player1->rectangle->w);
-    }
-    else if (entity->ball->rectangle->x < (entity->player2->rectangle->x + entity->player2->rectangle->w) &&
-            (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player2->rectangle->x  &&
-             entity->ball->rectangle->y < (entity->player2->rectangle->y + entity->player2->rectangle->h) &&
-            (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player2->rectangle->y)
-    {
-        entity->ball->speed_x *= -1;
-
-        entity->ball->rectangle->x = (entity->player2->rectangle->x - entity->ball->rectangle->w);
-    }
-}
-
-static void move_player_one_up()
-{
-    entity->player1->rectangle->y -= 1000 * get_delta_time(&time);
-}
-
-static void move_player_one_down()
-{
-    entity->player1->rectangle->y += 1000 * get_delta_time(&time);
-}
-
-static void move_player_two_up()
-{
-    entity->player2->rectangle->y -= 1000 * get_delta_time(&time);
-}
-
-static void move_player_two_down()
-{
-    entity->player2->rectangle->y += 1000 * get_delta_time(&time);
-}
-
 void update()
 {
     calculate_delta_time(&time);
-    ball_movement();
-    check_ball_player_collision();
-    check_ball_walls_collision();
+    ball_movement(entity, &time);
+    check_ball_player_collision(entity);
+    check_ball_walls_collision(entity);
 }
 
 void process_input()
@@ -138,19 +71,19 @@ void process_input()
     }
     if (state[SDL_SCANCODE_W] && entity->player1->rectangle->y > 0)
     {
-        move_player_one_up();
+        move_player_one_up(entity, &time);
     }
     if (state[SDL_SCANCODE_S] && (entity->player1->rectangle->y + entity->player1->rectangle->h) < WINDOW_HEIGHT)
     {
-        move_player_one_down();
+        move_player_one_down(entity, &time);
     }
     if (state[SDL_SCANCODE_K] && entity->player2->rectangle->y > 0)
     {
-        move_player_two_up();
+        move_player_two_up(entity, &time);
     }
     if (state[SDL_SCANCODE_L] && (entity->player2->rectangle->y + entity->player2->rectangle->h) < WINDOW_HEIGHT)
     {
-        move_player_two_down();
+        move_player_two_down(entity, &time);
     }
 }
 
