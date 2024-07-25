@@ -6,6 +6,7 @@
 typedef struct ball_s
 {
     SDL_Rect* rectangle;
+    float speed_x, speed_y;
 } Ball;
 
 typedef struct player_s
