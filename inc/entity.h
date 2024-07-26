@@ -13,6 +13,7 @@ typedef struct ball_s
 typedef struct player_s
 {
     SDL_Rect* rectangle;
+    int player_score;
 } Player;
 
 

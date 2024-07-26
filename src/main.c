@@ -5,13 +5,26 @@
 #include "entity.h"
 #include "time.h"
 #include "renderer.h"
+#include "text.h"
 #include "SDL.h"
+#include "SDL_ttf.h"
 
 Entity* entity;
+Font* textFont = NULL;
 Time time;
 
 static void free_memory();
 static void quit_game();
+static void check_win_condition();
+
+void check_win_condition()
+{
+    if (entity->player1->player_score == 5 || entity->player2->player_score == 5)
+    {
+        printf("Game is over!");
+        quit_game();
+    }
+}
 
 void update()
 {
@@ -62,6 +75,8 @@ void init()
     entity = (Entity*)malloc(sizeof(Entity));
     initialize_entities(entity);
     initialize_time(&time);
+    textFont = (Font*)malloc(sizeof(Font));
+    initialize_text(textFont);
 }
 
 static void free_memory()
@@ -75,11 +90,17 @@ static void free_memory()
     free(entity->player2);
     
     free(entity);
+    if(textFont)
+    {
+        TTF_CloseFont(textFont->font);
+        free(textFont);
+    }
 }
 
 static void quit_game()
 {
     free_memory();
+    TTF_Quit();
     destroy_window();
 }
 
@@ -95,8 +116,9 @@ int SDL_main (int argc, char* argv[])
     {
         update();
         process_input();
-        render(entity);
+        render(entity, textFont);
         delay_frame(&time);
+        check_win_condition();
     }
 
     quit_game();

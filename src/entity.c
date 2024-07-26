@@ -24,50 +24,58 @@ void initialize_entities(Entity* entity)
     entity->player1->rectangle->y = 540.0f;
     entity->player1->rectangle->h = 100.0f;
     entity->player1->rectangle->w = 20.0f;
+    entity->player1->player_score = 0;
 
     entity->player2->rectangle->x = 1850.0f;
     entity->player2->rectangle->y = 540.0f;
     entity->player2->rectangle->h = 100.0f;
     entity->player2->rectangle->w = 20.0f;
+    entity->player2->player_score = 0;
 }
 
-void ball_movement(Entity* ball, Time* time)
+void ball_movement(Entity* entity, Time* time)
 {
-    ball->ball->rectangle->x += (ball->ball->speed_x * get_delta_time(time));
-    ball->ball->rectangle->y += (ball->ball->speed_y * get_delta_time(time));
+    entity->ball->rectangle->x += (entity->ball->speed_x * get_delta_time(time));
+    entity->ball->rectangle->y += (entity->ball->speed_y * get_delta_time(time));
 }
 
-void check_ball_walls_collision(Entity* ball)
+void check_ball_walls_collision(Entity* entity)
 {
-    if (ball->ball->rectangle->x <= 0 || (ball->ball->rectangle->x + ball->ball->rectangle->w) >= WINDOW_WIDTH)
+    if (entity->ball->rectangle->x <= 0)
     {
-        ball->ball->speed_x *= -1;
+        entity->ball->speed_x *= -1;
+        entity->player2->player_score++;
     }
-    else if (ball->ball->rectangle->y <= 0 || (ball->ball->rectangle->y + ball->ball->rectangle->h) >= WINDOW_HEIGHT)
+    else if ((entity->ball->rectangle->x + entity->ball->rectangle->w)  >= WINDOW_WIDTH)
     {
-        ball->ball->speed_y *= -1;
+        entity->ball->speed_x *= -1;
+        entity->player1->player_score++;
+    }
+    else if (entity->ball->rectangle->y <= 0 || (entity->ball->rectangle->y + entity->ball->rectangle->h) >= WINDOW_HEIGHT)
+    {
+        entity->ball->speed_y *= -1;
     }
 }
 
-void check_ball_player_collision(Entity* ball)
+void check_ball_player_collision(Entity* entity)
 {
-    if  (ball->ball->rectangle->x < (ball->player1->rectangle->x + ball->player1->rectangle->w) &&
-        (ball->ball->rectangle->x +  ball->ball->rectangle->w)   > ball->player1->rectangle->x  &&
-         ball->ball->rectangle->y < (ball->player1->rectangle->y + ball->player1->rectangle->h) &&
-        (ball->ball->rectangle->y +  ball->ball->rectangle->h)   > ball->player1->rectangle->y)
+    if  (entity->ball->rectangle->x < (entity->player1->rectangle->x + entity->player1->rectangle->w) &&
+        (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player1->rectangle->x  &&
+         entity->ball->rectangle->y < (entity->player1->rectangle->y + entity->player1->rectangle->h) &&
+        (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player1->rectangle->y)
     {
-        ball->ball->speed_x *= -1;
+        entity->ball->speed_x *= -1;
 
-        ball->ball->rectangle->x = (ball->player1->rectangle->x + ball->player1->rectangle->w);
+        entity->ball->rectangle->x = (entity->player1->rectangle->x + entity->player1->rectangle->w);
     }
-    else if (ball->ball->rectangle->x < (ball->player2->rectangle->x + ball->player2->rectangle->w) &&
-            (ball->ball->rectangle->x +  ball->ball->rectangle->w)   > ball->player2->rectangle->x  &&
-             ball->ball->rectangle->y < (ball->player2->rectangle->y + ball->player2->rectangle->h) &&
-            (ball->ball->rectangle->y +  ball->ball->rectangle->h)   > ball->player2->rectangle->y)
+    else if (entity->ball->rectangle->x < (entity->player2->rectangle->x + entity->player2->rectangle->w) &&
+            (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player2->rectangle->x  &&
+             entity->ball->rectangle->y < (entity->player2->rectangle->y + entity->player2->rectangle->h) &&
+            (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player2->rectangle->y)
     {
-        ball->ball->speed_x *= -1;
+        entity->ball->speed_x *= -1;
 
-        ball->ball->rectangle->x = (ball->player2->rectangle->x - ball->ball->rectangle->w);
+        entity->ball->rectangle->x = (entity->player2->rectangle->x - entity->ball->rectangle->w);
     }
 }
 

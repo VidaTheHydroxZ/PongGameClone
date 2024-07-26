@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include "text.h"
 #include "utils.h"
 #include <stdio.h>
 
@@ -39,7 +40,7 @@ int32_t initialize_window()
     return INIT_SUCCESS;
 }
 
-void render(Entity* entity)
+void render(Entity* entity, Font* textFont)
 {
 
     if (!renderer) {
@@ -54,6 +55,8 @@ void render(Entity* entity)
     SDL_RenderFillRect(renderer, entity->ball->rectangle);
     SDL_RenderFillRect(renderer, entity->player1->rectangle);
     SDL_RenderFillRect(renderer, entity->player2->rectangle);
+    render_text(renderer, textFont, entity->player1->player_score, 50, 40);
+    render_text(renderer, textFont, entity->player2->player_score, 1400, 40);
 
     // Present the screen
     SDL_RenderPresent(renderer);
