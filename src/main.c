@@ -4,118 +4,34 @@
 #include "utils.h"
 #include "entity.h"
 #include "time.h"
+#include "renderer.h"
+#include "text.h"
 #include "SDL.h"
+#include "SDL_ttf.h"
 
-int32_t game_is_running;
-SDL_Window* window;
-SDL_Renderer* renderer;
 Entity* entity;
+Font* textFont = NULL;
 Time time;
 
-static void move_player_one_down();
-static void move_player_one_up();
-static void move_player_two_down();
-static void move_player_two_up();
 static void free_memory();
-static void ball_movement();
-static void check_ball_walls_collision();
-static void check_ball_player_collision();
+static void quit_game();
+static void check_win_condition();
 
-int32_t initialize_window()
+void check_win_condition()
 {
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) 
+    if (entity->player1->player_score == 5 || entity->player2->player_score == 5)
     {
-        fprintf(stderr, "Error initializing SDL.\n");
-        return INIT_FAILED;
+        printf("Game is over!");
+        quit_game();
     }
-        window = SDL_CreateWindow(
-        "BlobGame", 
-        SDL_WINDOWPOS_CENTERED, 
-        SDL_WINDOWPOS_CENTERED, 
-        WINDOW_WIDTH, 
-        WINDOW_HEIGHT, 
-        SDL_WINDOW_BORDERLESS
-        );
-    if (!window) 
-    {
-        fprintf(stderr, "Error creating SDL Window.\n");
-        return INIT_FAILED;
-    }
-        renderer = SDL_CreateRenderer(window, -1, 0);
-    if (!renderer)
-    {
-        fprintf(stderr, "Error creating SDL Renderer.\n");
-        return INIT_FAILED;
-    }
-    return INIT_SUCCESS;
-}
-
-static void ball_movement()
-{
-    entity->ball->rectangle->x += (entity->ball->speed_x * get_delta_time(&time));
-    entity->ball->rectangle->y += (entity->ball->speed_y * get_delta_time(&time));
-}
-
-static void check_ball_walls_collision()
-{
-    if (entity->ball->rectangle->x <= 0 || (entity->ball->rectangle->x + entity->ball->rectangle->w) >= WINDOW_WIDTH)
-    {
-        entity->ball->speed_x *= -1;
-    }
-    else if (entity->ball->rectangle->y <= 0 || (entity->ball->rectangle->y + entity->ball->rectangle->h) >= WINDOW_HEIGHT)
-    {
-        entity->ball->speed_y *= -1;
-    }
-}
-
-static void check_ball_player_collision()
-{
-    if  (entity->ball->rectangle->x < (entity->player1->rectangle->x + entity->player1->rectangle->w) &&
-        (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player1->rectangle->x  &&
-         entity->ball->rectangle->y < (entity->player1->rectangle->y + entity->player1->rectangle->h) &&
-        (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player1->rectangle->y)
-    {
-        entity->ball->speed_x *= -1;
-
-        entity->ball->rectangle->x = (entity->player1->rectangle->x + entity->player1->rectangle->w);
-    }
-    else if (entity->ball->rectangle->x < (entity->player2->rectangle->x + entity->player2->rectangle->w) &&
-            (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player2->rectangle->x  &&
-             entity->ball->rectangle->y < (entity->player2->rectangle->y + entity->player2->rectangle->h) &&
-            (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player2->rectangle->y)
-    {
-        entity->ball->speed_x *= -1;
-
-        entity->ball->rectangle->x = (entity->player2->rectangle->x - entity->ball->rectangle->w);
-    }
-}
-
-static void move_player_one_up()
-{
-    entity->player1->rectangle->y -= 1000 * get_delta_time(&time);
-}
-
-static void move_player_one_down()
-{
-    entity->player1->rectangle->y += 1000 * get_delta_time(&time);
-}
-
-static void move_player_two_up()
-{
-    entity->player2->rectangle->y -= 1000 * get_delta_time(&time);
-}
-
-static void move_player_two_down()
-{
-    entity->player2->rectangle->y += 1000 * get_delta_time(&time);
 }
 
 void update()
 {
     calculate_delta_time(&time);
-    ball_movement();
-    check_ball_player_collision();
-    check_ball_walls_collision();
+    ball_movement(entity, &time);
+    check_ball_player_collision(entity);
+    check_ball_walls_collision(entity);
 }
 
 void process_input()
@@ -138,48 +54,29 @@ void process_input()
     }
     if (state[SDL_SCANCODE_W] && entity->player1->rectangle->y > 0)
     {
-        move_player_one_up();
+        move_player_one_up(entity, &time);
     }
     if (state[SDL_SCANCODE_S] && (entity->player1->rectangle->y + entity->player1->rectangle->h) < WINDOW_HEIGHT)
     {
-        move_player_one_down();
+        move_player_one_down(entity, &time);
     }
     if (state[SDL_SCANCODE_K] && entity->player2->rectangle->y > 0)
     {
-        move_player_two_up();
+        move_player_two_up(entity, &time);
     }
     if (state[SDL_SCANCODE_L] && (entity->player2->rectangle->y + entity->player2->rectangle->h) < WINDOW_HEIGHT)
     {
-        move_player_two_down();
+        move_player_two_down(entity, &time);
     }
 }
 
-void setup()
+void init()
 {
     entity = (Entity*)malloc(sizeof(Entity));
     initialize_entities(entity);
     initialize_time(&time);
-}
-
-void render()
-{
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, entity->ball->rectangle);
-    SDL_RenderFillRect(renderer, entity->player1->rectangle);
-    SDL_RenderFillRect(renderer, entity->player2->rectangle);
-
-    // Present the screen
-    SDL_RenderPresent(renderer);
-}
-
-void destroy_window()
-{
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+    textFont = (Font*)malloc(sizeof(Font));
+    initialize_text(textFont);
 }
 
 static void free_memory()
@@ -193,6 +90,18 @@ static void free_memory()
     free(entity->player2);
     
     free(entity);
+    if(textFont)
+    {
+        TTF_CloseFont(textFont->font);
+        free(textFont);
+    }
+}
+
+static void quit_game()
+{
+    free_memory();
+    TTF_Quit();
+    destroy_window();
 }
 
 int SDL_main (int argc, char* argv[])
@@ -202,18 +111,17 @@ int SDL_main (int argc, char* argv[])
     {
         return -1;
     }
-    setup();
-    printf("Game is running...");
+    init();
     while(game_is_running)
     {
         update();
         process_input();
-        render();
+        render(entity, textFont);
         delay_frame(&time);
+        check_win_condition();
     }
 
-    free_memory();
-    destroy_window();
+    quit_game();
     
     return 0;
 }

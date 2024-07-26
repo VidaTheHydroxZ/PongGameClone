@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "utils.h"
 
 #include <stdlib.h>
 
@@ -23,14 +24,77 @@ void initialize_entities(Entity* entity)
     entity->player1->rectangle->y = 540.0f;
     entity->player1->rectangle->h = 100.0f;
     entity->player1->rectangle->w = 20.0f;
+    entity->player1->player_score = 0;
 
     entity->player2->rectangle->x = 1850.0f;
     entity->player2->rectangle->y = 540.0f;
     entity->player2->rectangle->h = 100.0f;
     entity->player2->rectangle->w = 20.0f;
+    entity->player2->player_score = 0;
 }
 
-void move_player_one_up()
+void ball_movement(Entity* entity, Time* time)
 {
-    
+    entity->ball->rectangle->x += (entity->ball->speed_x * get_delta_time(time));
+    entity->ball->rectangle->y += (entity->ball->speed_y * get_delta_time(time));
+}
+
+void check_ball_walls_collision(Entity* entity)
+{
+    if (entity->ball->rectangle->x <= 0)
+    {
+        entity->ball->speed_x *= -1;
+        entity->player2->player_score++;
+    }
+    else if ((entity->ball->rectangle->x + entity->ball->rectangle->w)  >= WINDOW_WIDTH)
+    {
+        entity->ball->speed_x *= -1;
+        entity->player1->player_score++;
+    }
+    else if (entity->ball->rectangle->y <= 0 || (entity->ball->rectangle->y + entity->ball->rectangle->h) >= WINDOW_HEIGHT)
+    {
+        entity->ball->speed_y *= -1;
+    }
+}
+
+void check_ball_player_collision(Entity* entity)
+{
+    if  (entity->ball->rectangle->x < (entity->player1->rectangle->x + entity->player1->rectangle->w) &&
+        (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player1->rectangle->x  &&
+         entity->ball->rectangle->y < (entity->player1->rectangle->y + entity->player1->rectangle->h) &&
+        (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player1->rectangle->y)
+    {
+        entity->ball->speed_x *= -1;
+
+        entity->ball->rectangle->x = (entity->player1->rectangle->x + entity->player1->rectangle->w);
+    }
+    else if (entity->ball->rectangle->x < (entity->player2->rectangle->x + entity->player2->rectangle->w) &&
+            (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player2->rectangle->x  &&
+             entity->ball->rectangle->y < (entity->player2->rectangle->y + entity->player2->rectangle->h) &&
+            (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player2->rectangle->y)
+    {
+        entity->ball->speed_x *= -1;
+
+        entity->ball->rectangle->x = (entity->player2->rectangle->x - entity->ball->rectangle->w);
+    }
+}
+
+void move_player_one_up(Entity* player, Time* time)
+{
+    player->player1->rectangle->y -= 1000 * get_delta_time(time);
+}
+
+void move_player_one_down(Entity* player, Time* time)
+{
+    player->player1->rectangle->y += 1000 * get_delta_time(time);
+}
+
+void move_player_two_up(Entity* player, Time* time)
+{
+    player->player2->rectangle->y -= 1000 * get_delta_time(time);
+}
+
+void move_player_two_down(Entity* player, Time* time)
+{
+    player->player2->rectangle->y += 1000 * get_delta_time(time);
 }

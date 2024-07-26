@@ -5,10 +5,10 @@ INC=-I./inc -I./vendor/SDL2/include
 LIB_PATH=-L./vendor/SDL2/lib/x64
 
 # Libraries to link against
-LIBS=-lSDL2main -lSDL2
+LIBS=-lSDL2main -lSDL2 -lSDL2_ttf
 
 # DLL Path
-DLL_PATH=./vendor/SDL2/lib/x64/SDL2.dll
+DLL_PATH=./vendor/SDL2/lib/x64/SDL*.dll
 
 build:
 	gcc -Wall -std=c23 ${INC} ${LIB_PATH} ./src/*.c ${LIBS} -o game
@@ -18,4 +18,4 @@ run:
 	./game
 
 clean:
-	rm -f game.exe SDL2.dll
+	rm -f game.exe SDL2.dll SDL2_ttf.dll
