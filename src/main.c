@@ -21,7 +21,7 @@ void check_win_condition()
 {
     if (entity->player1->player_score == 5 || entity->player2->player_score == 5)
     {
-        printf("Game is over!");
+        printf("Game is over!\n");
         quit_game();
     }
 }
@@ -102,6 +102,7 @@ static void quit_game()
     free_memory();
     TTF_Quit();
     destroy_window();
+    game_is_running = 0;
 }
 
 int SDL_main (int argc, char* argv[])
@@ -120,8 +121,5 @@ int SDL_main (int argc, char* argv[])
         delay_frame(&time);
         check_win_condition();
     }
-
-    quit_game();
-    
     return 0;
 }

@@ -19,6 +19,8 @@ void initialize_entities(Entity* entity)
     entity->ball->rectangle->w = 20.0f;
     entity->ball->speed_x = 500.0f;
     entity->ball->speed_y = 500.0f;
+    entity->ball->acceleration = 1.0001f;
+    entity->ball->max_speed = 900.0f;
 
     entity->player1->rectangle->x = 50.f;
     entity->player1->rectangle->y = 540.0f;
@@ -35,47 +37,59 @@ void initialize_entities(Entity* entity)
 
 void ball_movement(Entity* entity, Time* time)
 {
-    entity->ball->rectangle->x += (entity->ball->speed_x * get_delta_time(time));
-    entity->ball->rectangle->y += (entity->ball->speed_y * get_delta_time(time));
+    entity->ball->speed_x *= entity->ball->acceleration;
+    entity->ball->speed_y *= entity->ball->acceleration;
+
+    entity->ball->rectangle->x += (entity->ball->speed_x * 1.5f * get_delta_time(time));
+    entity->ball->rectangle->y += (entity->ball->speed_y * 1.5f * get_delta_time(time));
+
+    if (entity->ball->speed_x > entity->ball->max_speed) entity->ball->speed_x = entity->ball->max_speed;
+    if (entity->ball->speed_y > entity->ball->max_speed) entity->ball->speed_y = entity->ball->max_speed;
 }
 
 void check_ball_walls_collision(Entity* entity)
 {
-    if (entity->ball->rectangle->x <= 0)
+    if(entity)
     {
-        entity->ball->speed_x *= -1;
-        entity->player2->player_score++;
-    }
-    else if ((entity->ball->rectangle->x + entity->ball->rectangle->w)  >= WINDOW_WIDTH)
-    {
-        entity->ball->speed_x *= -1;
-        entity->player1->player_score++;
-    }
-    else if (entity->ball->rectangle->y <= 0 || (entity->ball->rectangle->y + entity->ball->rectangle->h) >= WINDOW_HEIGHT)
-    {
-        entity->ball->speed_y *= -1;
+        if (entity->ball->rectangle->x <= 0)
+        {
+            entity->ball->speed_x *= -1;
+            entity->player2->player_score++;
+        }
+        else if ((entity->ball->rectangle->x + entity->ball->rectangle->w)  >= WINDOW_WIDTH)
+        {
+            entity->ball->speed_x *= -1;
+            entity->player1->player_score++;
+        }
+        else if (entity->ball->rectangle->y <= 0 || (entity->ball->rectangle->y + entity->ball->rectangle->h) >= WINDOW_HEIGHT)
+        {
+            entity->ball->speed_y *= -1;
+        }
     }
 }
 
 void check_ball_player_collision(Entity* entity)
 {
-    if  (entity->ball->rectangle->x < (entity->player1->rectangle->x + entity->player1->rectangle->w) &&
-        (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player1->rectangle->x  &&
-         entity->ball->rectangle->y < (entity->player1->rectangle->y + entity->player1->rectangle->h) &&
-        (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player1->rectangle->y)
+    if(entity)
     {
-        entity->ball->speed_x *= -1;
+        if  (entity->ball->rectangle->x < (entity->player1->rectangle->x + entity->player1->rectangle->w) &&
+            (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player1->rectangle->x  &&
+             entity->ball->rectangle->y < (entity->player1->rectangle->y + entity->player1->rectangle->h) &&
+            (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player1->rectangle->y)
+        {
+            entity->ball->speed_x *= -1;
 
-        entity->ball->rectangle->x = (entity->player1->rectangle->x + entity->player1->rectangle->w);
-    }
-    else if (entity->ball->rectangle->x < (entity->player2->rectangle->x + entity->player2->rectangle->w) &&
-            (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player2->rectangle->x  &&
-             entity->ball->rectangle->y < (entity->player2->rectangle->y + entity->player2->rectangle->h) &&
-            (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player2->rectangle->y)
-    {
-        entity->ball->speed_x *= -1;
+            entity->ball->rectangle->x = (entity->player1->rectangle->x + entity->player1->rectangle->w);
+        }
+        else if (entity->ball->rectangle->x < (entity->player2->rectangle->x + entity->player2->rectangle->w) &&
+                (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player2->rectangle->x  &&
+                 entity->ball->rectangle->y < (entity->player2->rectangle->y + entity->player2->rectangle->h) &&
+                (entity->ball->rectangle->y +  entity->ball->rectangle->h)   > entity->player2->rectangle->y)
+        {
+            entity->ball->speed_x *= -1;
 
-        entity->ball->rectangle->x = (entity->player2->rectangle->x - entity->ball->rectangle->w);
+            entity->ball->rectangle->x = (entity->player2->rectangle->x - entity->ball->rectangle->w);
+        }
     }
 }
 

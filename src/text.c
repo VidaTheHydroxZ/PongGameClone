@@ -13,11 +13,20 @@ void initialize_text(Font* textFont)
         fprintf(stderr, "Failed to allocate memory for Font.\n");
         exit(1);
     }
+
     textFont->ptsize = 40;
     textFont->text_color.r = 255;
     textFont->text_color.g = 255;
     textFont->text_color.b = 255;
     textFont->text_color.a = 255;
+
+    textFont->font = TTF_OpenFont("vendor/fonts/Arial.ttf", textFont->ptsize);
+    if (textFont->font == NULL)
+    {
+        printf("Font loading failed: %s\n", TTF_GetError());
+        free(textFont);
+        return;
+    }
 }
 
 void render_text(SDL_Renderer* renderer, Font* textFont, int playerScore, int x, int y)
@@ -31,14 +40,6 @@ void render_text(SDL_Renderer* renderer, Font* textFont, int playerScore, int x,
     if (!textFont)
     {
         fprintf(stderr, "Error: Font initialization failed.\n");
-        return;
-    }
-
-    textFont->font = TTF_OpenFont("vendor/fonts/SuperPixel.ttf", textFont->ptsize);
-    if (textFont->font == NULL)
-    {
-        printf("Font loading failed: %s\n", TTF_GetError());
-        free(textFont);
         return;
     }
     snprintf(textFont->player_score_text_buffer, TEXT_BUFFER_SIZE, "Player Score: %d", playerScore);
