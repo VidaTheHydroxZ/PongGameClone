@@ -9,7 +9,7 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 
-Entity* entity;
+Entity* entity = NULL;
 Font* textFont = NULL;
 Time time;
 
