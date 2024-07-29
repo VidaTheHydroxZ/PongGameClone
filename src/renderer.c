@@ -56,7 +56,7 @@ void render(Entity* entity, Font* textFont)
     SDL_RenderFillRect(renderer, entity->player1->rectangle);
     SDL_RenderFillRect(renderer, entity->player2->rectangle);
     render_text(renderer, textFont, entity->player1->player_score, 50, 40);
-    render_text(renderer, textFont, entity->player2->player_score, 1400, 40);
+    render_text(renderer, textFont, entity->player2->player_score, 1700, 40);
 
     // Present the screen
     SDL_RenderPresent(renderer);

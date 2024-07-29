@@ -20,7 +20,7 @@ void initialize_text(Font* textFont)
     textFont->text_color.b = 255;
     textFont->text_color.a = 255;
 
-    textFont->font = TTF_OpenFont("vendor/fonts/Arial.ttf", textFont->ptsize);
+    textFont->font = TTF_OpenFont("vendor/fonts/PixeloidSans.ttf", textFont->ptsize);
     if (textFont->font == NULL)
     {
         printf("Font loading failed: %s\n", TTF_GetError());
@@ -42,7 +42,7 @@ void render_text(SDL_Renderer* renderer, Font* textFont, int playerScore, int x,
         fprintf(stderr, "Error: Font initialization failed.\n");
         return;
     }
-    snprintf(textFont->player_score_text_buffer, TEXT_BUFFER_SIZE, "Player Score: %d", playerScore);
+    snprintf(textFont->player_score_text_buffer, TEXT_BUFFER_SIZE, "Score: %d", playerScore);
     SDL_Surface* TextSurface = TTF_RenderText_Blended(textFont->font, textFont->player_score_text_buffer, textFont->text_color);
     if (TextSurface == NULL)
     {

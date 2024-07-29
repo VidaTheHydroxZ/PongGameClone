@@ -21,6 +21,8 @@ void initialize_entities(Entity* entity)
     entity->ball->speed_y = 500.0f;
     entity->ball->acceleration = 1.0001f;
     entity->ball->max_speed = 900.0f;
+    entity->ball->ball_bounce_sound_volume = 80;
+    entity->ball->ball_bounce_sound = load_sound("vendor/sounds/ball-bounce-sound.wav");
 
     entity->player1->rectangle->x = 50.f;
     entity->player1->rectangle->y = 540.0f;
@@ -55,15 +57,21 @@ void check_ball_walls_collision(Entity* entity)
         {
             entity->ball->speed_x *= -1;
             entity->player2->player_score++;
+
+            play_sound(entity->ball->ball_bounce_sound_volume, entity->ball->ball_bounce_sound);
         }
         else if ((entity->ball->rectangle->x + entity->ball->rectangle->w)  >= WINDOW_WIDTH)
         {
             entity->ball->speed_x *= -1;
             entity->player1->player_score++;
+
+            play_sound(entity->ball->ball_bounce_sound_volume, entity->ball->ball_bounce_sound);
         }
         else if (entity->ball->rectangle->y <= 0 || (entity->ball->rectangle->y + entity->ball->rectangle->h) >= WINDOW_HEIGHT)
         {
             entity->ball->speed_y *= -1;
+
+            play_sound(entity->ball->ball_bounce_sound_volume, entity->ball->ball_bounce_sound);
         }
     }
 }
@@ -80,6 +88,8 @@ void check_ball_player_collision(Entity* entity)
             entity->ball->speed_x *= -1;
 
             entity->ball->rectangle->x = (entity->player1->rectangle->x + entity->player1->rectangle->w);
+
+            play_sound(entity->ball->ball_bounce_sound_volume, entity->ball->ball_bounce_sound);
         }
         else if (entity->ball->rectangle->x < (entity->player2->rectangle->x + entity->player2->rectangle->w) &&
                 (entity->ball->rectangle->x +  entity->ball->rectangle->w)   > entity->player2->rectangle->x  &&
@@ -89,6 +99,8 @@ void check_ball_player_collision(Entity* entity)
             entity->ball->speed_x *= -1;
 
             entity->ball->rectangle->x = (entity->player2->rectangle->x - entity->ball->rectangle->w);
+
+            play_sound(entity->ball->ball_bounce_sound_volume, entity->ball->ball_bounce_sound);
         }
     }
 }

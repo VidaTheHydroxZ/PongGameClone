@@ -3,10 +3,13 @@
 
 #include "SDL_rect.h"
 #include "time.h"
+#include "sound.h"
 
 typedef struct ball_s
 {
     SDL_Rect* rectangle;
+    Sound* ball_bounce_sound;
+    int ball_bounce_sound_volume;
     float speed_x, speed_y, acceleration, max_speed;
 } Ball;
 

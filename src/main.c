@@ -6,6 +6,7 @@
 #include "time.h"
 #include "renderer.h"
 #include "text.h"
+#include "sound.h"
 #include "SDL.h"
 #include "SDL_ttf.h"
 
@@ -72,6 +73,12 @@ void process_input()
 
 void init()
 {
+    game_is_running = initialize_window();
+    if (game_is_running != INIT_SUCCESS)
+    {
+        exit(1);
+    }
+    init_mixer();
     entity = (Entity*)malloc(sizeof(Entity));
     initialize_entities(entity);
     initialize_time(&time);
@@ -95,6 +102,7 @@ static void free_memory()
         TTF_CloseFont(textFont->font);
         free(textFont);
     }
+    quit_mixer();
 }
 
 static void quit_game()
@@ -107,11 +115,6 @@ static void quit_game()
 
 int SDL_main (int argc, char* argv[])
 {
-    game_is_running = initialize_window();
-    if (game_is_running != INIT_SUCCESS)
-    {
-        return -1;
-    }
     init();
     while(game_is_running)
     {
