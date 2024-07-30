@@ -53,7 +53,9 @@ void render(Entity* entity, Font* textFont)
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(renderer, entity->ball->rectangle);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderFillRect(renderer, entity->player1->rectangle);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
     SDL_RenderFillRect(renderer, entity->player2->rectangle);
     render_text(renderer, textFont, entity->player1->player_score, 50, 40);
     render_text(renderer, textFont, entity->player2->player_score, 1700, 40);
