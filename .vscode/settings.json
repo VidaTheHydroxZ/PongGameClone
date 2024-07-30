@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "sdl_ttf.h": "c",
+        "stdlib.h": "c",
+        "stdint.h": "c",
+        "sdl_timer.h": "c"
+    }
+}

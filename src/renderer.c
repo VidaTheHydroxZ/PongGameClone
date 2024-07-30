@@ -3,10 +3,10 @@
 #include "utils.h"
 #include <stdio.h>
 
-int32_t game_is_running;
-
 SDL_Window* window;
 SDL_Renderer* renderer;
+
+Entity* rendererEntity = NULL;
 
 int32_t initialize_window()
 {
@@ -40,9 +40,8 @@ int32_t initialize_window()
     return INIT_SUCCESS;
 }
 
-void render(Entity* entity, Font* textFont)
+void render()
 {
-
     if (!renderer) {
         fprintf(stderr, "Error: Renderer or Entity components are not initialized properly.\n");
         return;
@@ -52,16 +51,26 @@ void render(Entity* entity, Font* textFont)
     SDL_RenderClear(renderer);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, entity->ball->rectangle);
+    SDL_RenderFillRect(renderer, rendererEntity->ball->rectangle);
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_RenderFillRect(renderer, entity->player1->rectangle);
+    SDL_RenderFillRect(renderer, rendererEntity->player1->rectangle);
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-    SDL_RenderFillRect(renderer, entity->player2->rectangle);
-    render_text(renderer, textFont, entity->player1->player_score, 50, 40);
-    render_text(renderer, textFont, entity->player2->player_score, 1700, 40);
+    SDL_RenderFillRect(renderer, rendererEntity->player2->rectangle);
+    render_text(renderer, rendererEntity->player1->player_score, 50, 40);
+    render_text(renderer, rendererEntity->player2->player_score, 1700, 40);
 
     // Present the screen
     SDL_RenderPresent(renderer);
+}
+
+void get_entity_for_renderer()
+{
+    rendererEntity = get_entity();
+    if (rendererEntity == NULL)
+    {
+        printf("No Entity could be assigned for renderer!\n");
+        return;
+    }
 }
 
 void destroy_window()
