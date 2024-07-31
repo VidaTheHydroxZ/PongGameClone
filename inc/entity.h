@@ -5,6 +5,8 @@
 #include "time.h"
 #include "sound.h"
 
+#include <stdbool.h>
+
 typedef struct ball_s
 {
     SDL_Rect* rectangle;
@@ -27,13 +29,16 @@ typedef struct entity_s
     Player* player2;
 } Entity;
 
-void initialize_entities(Entity* entity);
-void ball_movement(Entity* ball, Time* time);
-void check_ball_walls_collision(Entity* ball);
-void check_ball_player_collision(Entity* ball);
-void move_player_one_up(Entity* player, Time* time);
-void move_player_one_down(Entity* player, Time* time);
-void move_player_two_up(Entity* player, Time* time);
-void move_player_two_down(Entity* player, Time* time);
+void initialize_entities();
+void ball_movement();
+void check_ball_walls_collision();
+void check_ball_player_collision();
+void move_player_one_up();
+void move_player_one_down();
+void move_player_two_up();
+void move_player_two_down();
+bool check_win_condition();
+void free_all_entity_memory();
+Entity* get_entity();
 
 #endif

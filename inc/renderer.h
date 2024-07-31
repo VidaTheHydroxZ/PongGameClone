@@ -7,10 +7,11 @@
 
 typedef struct font_s Font;
 
-extern int32_t game_is_running;
+
 
 int32_t initialize_window();
-void render(Entity* entity, Font* textFont);
+void render();
 void destroy_window();
+void get_entity_for_renderer();
 
 #endif

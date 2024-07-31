@@ -1,13 +1,16 @@
 #include "text.h"
 #include <stdio.h>
 
-void initialize_text(Font* textFont)
+Font* textFont = NULL;
+
+void initialize_text()
 {
     if (TTF_Init() == -1)
     {
         fprintf(stderr, "Failed to initialize SDL_TTF!\n");
         exit(1);
     }
+    textFont = (Font*)malloc(sizeof(Font));
     if (textFont == NULL)
     {
         fprintf(stderr, "Failed to allocate memory for Font.\n");
@@ -29,7 +32,7 @@ void initialize_text(Font* textFont)
     }
 }
 
-void render_text(SDL_Renderer* renderer, Font* textFont, int playerScore, int x, int y)
+void render_text(SDL_Renderer* renderer, int playerScore, int x, int y)
 {
     if (!renderer)
     {
@@ -61,5 +64,14 @@ void render_text(SDL_Renderer* renderer, Font* textFont, int playerScore, int x,
     if(SDL_RenderCopy(renderer, TextTexture, NULL, &textRect) == -1)
     {
         printf("RenderCopy Failed: %s\n", TTF_GetError());
+    }
+}
+
+void free_text_memory()
+{
+    if (textFont)
+    {
+        TTF_CloseFont(textFont->font);
+        free(textFont);
     }
 }

@@ -2,9 +2,14 @@
 #include "utils.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
-void initialize_entities(Entity* entity)
+Entity* entity = NULL;
+
+void initialize_entities()
 {
+    entity = (Entity*)malloc(sizeof(Entity));
+
     entity->ball = (Ball*)malloc(sizeof(Ball));
     entity->player1 = (Player*)malloc(sizeof(Player));
     entity->player2 = (Player*)malloc(sizeof(Player));
@@ -17,10 +22,10 @@ void initialize_entities(Entity* entity)
     entity->ball->rectangle->y = 20.0f;
     entity->ball->rectangle->h = 20.0f;
     entity->ball->rectangle->w = 20.0f;
-    entity->ball->speed_x = 500.0f;
-    entity->ball->speed_y = 500.0f;
+    entity->ball->speed_x = 300.0f;
+    entity->ball->speed_y = 300.0f;
     entity->ball->acceleration = 1.0001f;
-    entity->ball->max_speed = 900.0f;
+    entity->ball->max_speed = 1100.0f;
     entity->ball->ball_bounce_sound_volume = 80;
     entity->ball->ball_bounce_sound = load_sound("vendor/sounds/ball-bounce-sound.wav");
 
@@ -37,19 +42,19 @@ void initialize_entities(Entity* entity)
     entity->player2->player_score = 0;
 }
 
-void ball_movement(Entity* entity, Time* time)
+void ball_movement()
 {
     entity->ball->speed_x *= entity->ball->acceleration;
     entity->ball->speed_y *= entity->ball->acceleration;
 
-    entity->ball->rectangle->x += (entity->ball->speed_x * 1.5f * get_delta_time(time));
-    entity->ball->rectangle->y += (entity->ball->speed_y * 1.5f * get_delta_time(time));
+    entity->ball->rectangle->x += (entity->ball->speed_x * 1.5f * get_delta_time());
+    entity->ball->rectangle->y += (entity->ball->speed_y * 1.5f * get_delta_time());
 
     if (entity->ball->speed_x > entity->ball->max_speed) entity->ball->speed_x = entity->ball->max_speed;
     if (entity->ball->speed_y > entity->ball->max_speed) entity->ball->speed_y = entity->ball->max_speed;
 }
 
-void check_ball_walls_collision(Entity* entity)
+void check_ball_walls_collision()
 {
     if(entity)
     {
@@ -76,7 +81,7 @@ void check_ball_walls_collision(Entity* entity)
     }
 }
 
-void check_ball_player_collision(Entity* entity)
+void check_ball_player_collision()
 {
     if(entity)
     {
@@ -105,22 +110,56 @@ void check_ball_player_collision(Entity* entity)
     }
 }
 
-void move_player_one_up(Entity* player, Time* time)
+void move_player_one_up()
 {
-    player->player1->rectangle->y -= 1000 * get_delta_time(time);
+    entity->player1->rectangle->y -= 1000 * get_delta_time();
 }
 
-void move_player_one_down(Entity* player, Time* time)
+void move_player_one_down()
 {
-    player->player1->rectangle->y += 1000 * get_delta_time(time);
+    entity->player1->rectangle->y += 1000 * get_delta_time();
 }
 
-void move_player_two_up(Entity* player, Time* time)
+void move_player_two_up()
 {
-    player->player2->rectangle->y -= 1000 * get_delta_time(time);
+    entity->player2->rectangle->y -= 1000 * get_delta_time();
 }
 
-void move_player_two_down(Entity* player, Time* time)
+void move_player_two_down()
 {
-    player->player2->rectangle->y += 1000 * get_delta_time(time);
+    entity->player2->rectangle->y += 1000 * get_delta_time();
+}
+
+bool check_win_condition()
+{
+    if (entity->player1->player_score == 5 || entity->player2->player_score == 5)
+    {
+        printf("Game is over!\n");
+        return true;
+    }
+    return false;
+}
+
+void free_all_entity_memory()
+{
+    free(entity->ball->rectangle);
+    free(entity->player1->rectangle);
+    free(entity->player2->rectangle);
+
+    free(entity->ball);
+    free(entity->player1);
+    free(entity->player2);
+    
+    free(entity);
+}
+
+Entity* get_entity()
+{
+    Entity* newEntity = malloc(sizeof(Entity));
+    newEntity = entity;
+    if (newEntity == NULL)
+    {
+        printf("No Entity assigned can be returned!\n");
+    }
+    return newEntity;
 }
