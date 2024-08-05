@@ -18,6 +18,7 @@ static void quit_game();
 void update()
 {
     calculate_delta_time();
+    delay_frame();
     ball_movement();
     check_ball_player_collision();
     check_ball_walls_collision();
@@ -62,7 +63,6 @@ int SDL_main (int argc, char* argv[])
         update();
         process_input();
         render();
-        delay_frame();
         if(check_win_condition()) quit_game();
     }
     return 0;
