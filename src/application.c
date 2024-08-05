@@ -9,6 +9,9 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 
+static void free_memory();
+static void quit_game();
+
 void update()
 {
     calculate_delta_time();
@@ -34,7 +37,7 @@ void init()
     get_entity_for_renderer();
 }
 
-void free_memory()
+static void free_memory()
 {
     free_all_entity_memory();
     free_text_memory();
@@ -42,7 +45,7 @@ void free_memory()
     quit_mixer();
 }
 
-void quit_game()
+static void quit_game()
 {
     free_memory();
     TTF_Quit();
