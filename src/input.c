@@ -1,4 +1,5 @@
 #include "input.h"
+#include "application.h"
 #include "entity.h"
 #include "utils.h"
 #include "SDL.h"

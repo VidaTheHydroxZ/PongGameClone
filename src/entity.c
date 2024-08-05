@@ -22,8 +22,8 @@ void initialize_entities()
     entity->ball->rectangle->y = 20.0f;
     entity->ball->rectangle->h = 20.0f;
     entity->ball->rectangle->w = 20.0f;
-    entity->ball->speed_x = 300.0f;
-    entity->ball->speed_y = 300.0f;
+    entity->ball->speed_x = 500.0f;
+    entity->ball->speed_y = 500.0f;
     entity->ball->acceleration = 1.0001f;
     entity->ball->max_speed = 1100.0f;
     entity->ball->ball_bounce_sound_volume = 80;
