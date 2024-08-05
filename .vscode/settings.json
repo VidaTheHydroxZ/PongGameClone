@@ -6,6 +6,8 @@
         "sdl_timer.h": "c",
         "sound.h": "c",
         "stdio.h": "c",
-        "sdl.h": "c"
+        "sdl.h": "c",
+        "application.h": "c",
+        "renderer.h": "c"
     }
 }

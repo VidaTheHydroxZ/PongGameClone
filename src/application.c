@@ -16,6 +16,7 @@ void update()
     ball_movement();
     check_ball_player_collision();
     check_ball_walls_collision();
+    if(check_win_condition()) quit_game();
 }
 
 void init()
