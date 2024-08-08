@@ -3,11 +3,14 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 Entity* entity = NULL;
 
 void initialize_entities()
 {
+    srand(time(0));
+
     entity = (Entity*)malloc(sizeof(Entity));
 
     entity->ball = (Ball*)malloc(sizeof(Ball));
@@ -28,8 +31,9 @@ void initialize_entities()
     entity->ball->max_speed = 1100.0f;
     entity->ball->ball_bounce_sound_volume = 80;
     entity->ball->ball_bounce_sound = load_sound("vendor/sounds/ball-bounce-sound.wav");
+    entity->ball->ball_start_right = rand() % 2;
 
-    entity->player1->rectangle->x = 50.f;
+    entity->player1->rectangle->x = 50.f; 
     entity->player1->rectangle->y = 540.0f;
     entity->player1->rectangle->h = 100.0f;
     entity->player1->rectangle->w = 20.0f;
@@ -47,8 +51,17 @@ void ball_movement()
     entity->ball->speed_x *= entity->ball->acceleration;
     entity->ball->speed_y *= entity->ball->acceleration;
 
-    entity->ball->rectangle->x += (entity->ball->speed_x * 1.5f * get_delta_time());
-    entity->ball->rectangle->y += (entity->ball->speed_y * 1.5f * get_delta_time());
+    if (entity->ball->ball_start_right)
+    {
+        entity->ball->rectangle->x += (entity->ball->speed_x * 1.5f * get_delta_time());
+        entity->ball->rectangle->y += (entity->ball->speed_y * 1.5f * get_delta_time());
+    }
+    else
+    {
+        entity->ball->rectangle->x -= (entity->ball->speed_x * 1.5f * get_delta_time());
+        entity->ball->rectangle->y += (entity->ball->speed_y * 1.5f * get_delta_time());
+    }
+    
 
     if (entity->ball->speed_x > entity->ball->max_speed) entity->ball->speed_x = entity->ball->max_speed;
     if (entity->ball->speed_y > entity->ball->max_speed) entity->ball->speed_y = entity->ball->max_speed;

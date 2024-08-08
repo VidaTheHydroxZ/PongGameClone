@@ -2,7 +2,7 @@
 #define ENTITY_H
 
 #include "SDL_rect.h"
-#include "time.h"
+#include "times.h"
 #include "sound.h"
 
 #include <stdbool.h>
@@ -12,6 +12,7 @@ typedef struct ball_s
     SDL_Rect* rectangle;
     Sound* ball_bounce_sound;
     int ball_bounce_sound_volume;
+    bool ball_start_right;
     float speed_x, speed_y, acceleration, max_speed;
 } Ball;
 
