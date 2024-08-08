@@ -1,5 +1,5 @@
-#ifndef TIME_H
-#define TIME_H
+#ifndef TIMES_H
+#define TIMES_H
 
 typedef struct time_s
 {
