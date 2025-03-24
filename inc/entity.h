@@ -25,9 +25,9 @@ typedef struct player_s
 
 typedef struct entity_s
 {
-    Ball* ball;
-    Player* player1;
-    Player* player2;
+    Ball ball;
+    Player player1;
+    Player player2;
 } Entity;
 
 void initialize_entities();

@@ -51,13 +51,13 @@ void render()
     SDL_RenderClear(renderer);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, rendererEntity->ball->rectangle);
+    SDL_RenderFillRect(renderer, rendererEntity->ball.rectangle);
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_RenderFillRect(renderer, rendererEntity->player1->rectangle);
+    SDL_RenderFillRect(renderer, rendererEntity->player1.rectangle);
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-    SDL_RenderFillRect(renderer, rendererEntity->player2->rectangle);
-    render_text(renderer, rendererEntity->player1->player_score, 50, 40);
-    render_text(renderer, rendererEntity->player2->player_score, 1700, 40);
+    SDL_RenderFillRect(renderer, rendererEntity->player2.rectangle);
+    render_text(renderer, rendererEntity->player1.player_score, 50, 40);
+    render_text(renderer, rendererEntity->player2.player_score, 1700, 40);
 
     // Present the screen
     SDL_RenderPresent(renderer);
